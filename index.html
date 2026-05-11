@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List | M-Prog</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+
+<body>
+    <div class="container">
+        <h1>To-Do List</h1>
+        <div class="filter">
+            <div class="completed-filter">
+                <div class="icon-container the-filter completed">
+                    <span class="completed-tasks">Completed</span>
+                    <i class='bx bx-chevron-down'></i>
+                </div>
+                <div class="icon-container the-filter not-completed">
+                    <span class="not-completed-tasks">Not Completed</span>
+                    <i class='bx bx-chevron-down'></i>
+                </div>
+                <div class="icon-container the-filter">
+                    <span class="all-tasks selected">All Tasks</span>
+                    <i class='bx bx-chevron-down'></i>
+                </div>
+            </div>
+            <div class="types">
+                <span>Arabic</span>
+                <span>English</span>
+                <span>Math</span>
+                <span>HTML</span>
+                <span>Css</span>
+                <span class="all selected">All</span>
+            </div>
+        </div>
+        <div class="tasks">
+
+
+            <div class="task Arabic not-completed">
+                <div class="task-header">
+                    <h2>Task Name</h2>
+                    <span class="type">Arabic</span>
+                </div>
+                <p>The Task Is: Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
+                <span class="check-circle"><i class='bx bx-check'></i></span>
+            </div>
+
+
+        </div>
+        <button class="new-task">+</button>
+        <div class="popup">
+            <div class="blur-container"></div>
+            <form>
+                <div class="add-task-popup">
+                    <h2>Add A Task</h2>
+                    <div class="task-name input-field">
+                        <input type="text" id="task-name" required>
+                        <label for="task-name">Task Name</label>
+                    </div>
+                    <div class="task-subject input-field">
+                        <input type="text" id="task-subject" required>
+                        <label for="task-subject">What Is The Task</label>
+                    </div>
+                    <div class="task-type input-field">
+                        <input type="text" id="task-type" required>
+                        <label for="task-type">Task Type</label>
+                    </div>
+                    <button class="add-task">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="js/index.js"></script>
+</body>
+
+</html>

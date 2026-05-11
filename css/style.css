@@ -1,0 +1,321 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    outline: none;
+    border: none;
+    font-family: "Cairo", sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    padding: 50px 0 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.container {
+    width: 90%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+    position: relative;
+}
+
+.container h1 {
+    color: green;
+    padding-bottom: 5px;
+    border-bottom: 2px solid green;
+}
+
+.container .filter {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.container .filter .completed-filter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 30px;
+    cursor: pointer;
+    padding-bottom: 20px;
+    border-bottom: 1.3px solid green;
+}
+
+.container .filter .completed-filter .icon-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: fit-content;
+    gap: 15px;
+}
+
+.container .filter .completed-filter .icon-container span {
+    font-size: 16px;
+    color: green;
+    transition: 0.5s;
+}
+
+.container .filter .completed-filter .icon-container i {
+    font-size: 20px;
+    color: green;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.container .filter .completed-filter .icon-container span.selected~i {
+    transform: rotate(180deg);
+}
+
+.container .filter .completed-filter .icon-container span:hover~i {
+    transform: rotate(360deg);
+}
+
+.container .filter .completed-filter .icon-container span.selected:hover~i {
+    transform: rotate(540deg);
+}
+
+@media (width <=540px) {
+    .container .filter .completed-filter {
+        width: 100%;
+    }
+
+    .container .filter .completed-filter .icon-container {
+        gap: 6px;
+    }
+}
+
+.container .new-task {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: green;
+    color: #fff;
+    font-weight: bold;
+    font-size: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    transition: 0.5s;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container .new-task:hover {
+    scale: 1.1;
+    opacity: 0.8;
+}
+
+.container .filter .types {
+    width: 90%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    row-gap: 15px;
+    column-gap: 30px;
+}
+
+.container .filter .types span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid green;
+    border-radius: 16px;
+    color: green;
+    padding: 5px 0;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.container .filter .types span.selected {
+    background-color: green;
+    color: #fff;
+}
+
+.container .filter .types span:hover {
+    background-color: rgba(0, 128, 0, 0.7);
+    color: #fff;
+}
+
+.container .filter .types span.selected:hover {
+    background-color: green;
+}
+
+.container .tasks {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.container .tasks .task {
+    padding: 15px 10% 30px 20px;
+    background-color: #eee;
+    display: flex;
+    gap: 25px;
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 10px;
+    font-size: 15px;
+    border: 1.3px solid green;
+    position: relative;
+}
+
+.container .tasks .task .task-header {
+    display: flex;
+    justify-content: space-between;
+    width: 107%;
+}
+
+.container .tasks .task .task-header h2 {
+    border-bottom: 1px solid #000;
+    padding-bottom: 4px;
+}
+
+.container .tasks .task .task-header span {
+    color: green;
+    font-weight: bold;
+}
+
+.container .tasks .task .check-circle {
+    width: 30px;
+    background-color: #fff;
+    border-radius: 50%;
+    height: 30px;
+    border: 1px solid green;
+    position: absolute;
+    bottom: 30px;
+    right: 4%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.container .tasks .task .check-circle:hover {
+    scale: 1.1;
+    background-color: rgba(0, 128, 0, 0.1);
+}
+
+.container .tasks .task .check-circle i {
+    color: green;
+    font-size: 1.5em;
+    display: none;
+}
+
+.container .tasks .task .check-circle i.checked {
+    display: block;
+}
+
+.container .blur-container {
+    position: fixed;
+    z-index: 11;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+}
+
+.container form {
+    position: fixed;
+    z-index: 13;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.container .add-task-popup {
+    width: 90%;
+    padding: 30px 0;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #fff;
+    gap: 30px;
+    border-radius: 12px;
+}
+
+.container .add-task-popup h2 {
+    color: green;
+    padding-bottom: 5px;
+    border-bottom: 2px solid green;
+    margin-bottom: 20px;
+}
+
+.container .add-task-popup .input-field {
+    position: relative;
+    width: 90%;
+}
+
+.container .add-task-popup .input-field input {
+    width: 100%;
+    padding: 25px 20px 15px;
+    border-bottom: 1.6px solid green;
+    border-left: 1.6px solid green;
+    border-top: 1.6px solid transparent;
+    border-right: 1.6px solid transparent;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.container .add-task-popup .input-field label {
+    position: absolute;
+    top: 50%;
+    left: 27px;
+    color: green;
+    font-size: 18px;
+    transform: translateY(-50%);
+    cursor: text;
+    transition: 0.5s;
+}
+
+.container .add-task-popup .input-field input:focus~label,
+.container .add-task-popup .input-field input:valid~label {
+    transform: translate(-10px, -180%);
+    font-size: 13px;
+}
+
+.container .add-task-popup .add-task {
+    background-color: green;
+    color: #fff;
+    width: 90%;
+    padding: 20px 0;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.container .add-task-popup .add-task:hover {
+    background-color: rgba(0, 128, 0, 0.7);
+}
+
+.container .popup {
+    display: none;
+}
+
+.container .popup.active {
+    display: block;
+}
