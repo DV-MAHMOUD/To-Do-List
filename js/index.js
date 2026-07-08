@@ -1,146 +1,258 @@
-const popup = document.querySelector(".popup");
-const showPopup = document.querySelector(".new-task");
-const form = document.forms[0];
-let taskss = document.querySelectorAll(".task");
+let tasks = document.querySelectorAll(".task");
+let isTasksCompleted = "all";
+let tasksType = "all";
 
-showPopup.addEventListener("click", () => {
-    popup.classList.add("active");
-    document.querySelector("#task-name").focus();
-});
-
-popup.addEventListener("click", (e) => {
-    if (e.target === form) {
-        popup.classList.remove("active");
-    }
-});
-
-document.querySelector(".all").addEventListener("click", (e) => {
-    let taskss = document.querySelectorAll(".task");
-    taskss.forEach((task) => {
-        if (task.style.display === "none") task.style.display = "flex";
-    });
-    typesFilter.querySelectorAll("span").forEach((ele) => {
-        ele.classList.remove("selected");
-    });
-    e.target.classList.add("selected");
-});
-
-// add a task
-
-const tasks = document.querySelector(".tasks");
-const typesFilter = document.querySelector(".types");
-
-form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const taskName = document.querySelector("#task-name").value.trim();
-    const taskSub = document.querySelector("#task-subject").value.trim();
-    const taskType = document.querySelector("#task-type").value.trim();
-    const newTask = document.createElement("div");
-    newTask.classList.add("task", taskType, "not-completed");
-    const headerBox = document.createElement("div");
-    headerBox.className = "task-header";
-    const h2 = document.createElement("h2");
-    h2.textContent = taskName;
-    headerBox.append(h2);
-    const span1 = document.createElement("span");
-    span1.className = "type";
-    span1.textContent = taskType;
-    headerBox.append(span1);
-    newTask.append(headerBox);
-    const p = document.createElement("p");
-    p.textContent = taskSub;
-    newTask.append(p);
-    const span2 = document.createElement("span");
-    span2.className = "check-circle";
-    span2.innerHTML = `<i class='bx bx-check'></i>`;
-    newTask.append(span2);
-    tasks.prepend(newTask);
-    popup.classList.remove("active");
-
-    // add a filter
-    let have = false;
-    for (let i = 0; i < typesFilter.children.length; i++) {
-        if (typesFilter.children[i].textContent.trim() === taskType) {
-            have = true;
-            break;
-        }
-    }
-    if (have === false) {
-        let newFilter = document.createElement("span");
-        newFilter.textContent = taskType;
-        newFilter.addEventListener("click", () => {
-            let taskss = document.querySelectorAll(".task");
-            taskss.forEach((task) => {
-                if (!task.classList.contains(newFilter.textContent.trim())) {
-                    task.style.display = "none";
-                } else {
-                    if (task.style.display === "none")
-                        task.style.display = "flex";
-                }
-            });
+window.onload = () => {
+    if (localStorage.getItem("tasks")) {
+        let loadedTasks = JSON.parse(localStorage.getItem("tasks"));
+        loadedTasks.forEach((task) => {
+            creatTask(
+                task.taskName,
+                task.taskDescription,
+                task.taskType,
+                task.isTaskCompleted,
+                false,
+            );
         });
-        typesFilter.append(newFilter);
     }
+};
+
+// filtering by complete logic
+
+const filtersByCompleted = document.querySelectorAll(".filter");
+
+filtersByCompleted.forEach((filter) => {
+    let filterChild = filter.querySelector("span");
+
+    filterChild.addEventListener("click", () => {
+        isTasksCompleted = filter.dataset.completed;
+        upsdateTasks();
+
+        filtersByCompleted.forEach((filter) => {
+            filter.classList.remove("selected");
+        });
+        filter.classList.add("selected");
+    });
+});
+
+// filtering by type logic
+
+const FiltersByTypeParent = document.querySelector(".filters-by-type");
+let FiltersByType = FiltersByTypeParent.querySelectorAll("span");
+const allType = FiltersByTypeParent.querySelector("[data-type='all']");
+
+allType.addEventListener("click", () => {
+    if (!allType.classList.contains("selected")) {
+        tasksType = allType.dataset.type;
+        upsdateTasks();
+
+        FiltersByType.forEach((filter) => {
+            filter.classList.remove("selected");
+        });
+        allType.classList.add("selected");
+    }
+});
+
+// show and hidde add task popup logic
+
+const newTaskBtn = document.querySelector(".new-task-btn");
+const popup = document.querySelector(".popup");
+newTaskBtn.addEventListener("click", () => {
+    popup.classList.add("show");
+});
+
+const form = document.forms[0];
+form.addEventListener("click", (e) => {
+    if (e.target === form) popup.classList.remove("show");
+});
+
+// add task logic
+// const addBtn = document.querySelector(".add-task");
+// addBtn.addEventListener("click", (e) => {
+//     e.preventDefault();
+
+//     const taskName = document.getElementById("name").value;
+//     const taskDescription = document.getElementById("description").value;
+//     const taskType = document.getElementById("type").value;
+
+//     if (taskName !== "" && taskDescription !== "" && taskType !== "")
+//         creatTask(taskName, taskDescription, taskType);
+
+//     popup.classList.remove("show");
+//     form.reset();
+// });
+
+document.forms[0].addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const taskName = document.getElementById("name").value;
+    const taskDescription = document.getElementById("description").value;
+    const taskType = document.getElementById("type").value;
+
+    if (taskName !== "" && taskDescription !== "" && taskType !== "") {
+        creatTask(taskName, taskDescription, taskType);
+
+        upsdateTasks();
+
+        saveData();
+    }
+
+    popup.classList.remove("show");
     form.reset();
 });
 
-// finish the task
-tasks.addEventListener("click", (e) => {
-    const checkCircle = e.target.closest(".check-circle");
+// project functions //
 
-    if (checkCircle) {
-        const icon = checkCircle.querySelector("i");
-        const taskCard = checkCircle.closest(".task");
-        const taskText = taskCard.querySelector("p");
+// for check if task should show or not
+function filteringTask(task) {
+    const taskType = task.querySelector(".task-type").textContent.toLowerCase();
+    const isTaskCompleted = task.dataset.completed;
 
-        icon.classList.toggle("checked");
-        taskCard.classList.toggle("completed");
+    task.classList.remove("show");
 
-        if (icon.classList.contains("checked")) {
-            taskText.style.cssText =
-                "text-decoration: line-through; color: gray;";
-        } else {
-            taskText.style.cssText = "text-decoration: none; color: #000;";
-        }
-    }
-});
-
-for (let i = 0; i < typesFilter.children.length; i++) {
-    if (!typesFilter.children[i].classList.contains("all")) {
-        typesFilter.children[i].addEventListener("click", (e) => {
-            let taskss = document.querySelectorAll(".task");
-            typesFilter.querySelectorAll("span").forEach((ele) => {
-                ele.classList.remove("selected");
-            });
-            e.target.classList.add("selected");
-            taskss.forEach((task) => {
-                if (
-                    !task.classList.contains(
-                        typesFilter.children[i].textContent.trim(),
-                    )
-                ) {
-                    task.style.display = "none";
-                } else {
-                    if (task.style.display === "none")
-                        task.style.display = "flex";
-                }
-            });
-        });
-    }
+    if (
+        (tasksType === taskType && isTasksCompleted === isTaskCompleted) ||
+        (tasksType === "all" && isTasksCompleted === "all") ||
+        (tasksType === "all" && isTasksCompleted === isTaskCompleted) ||
+        (isTasksCompleted === "all" && tasksType === taskType)
+    )
+        task.classList.add("show");
 }
 
-const completedFilter = document.querySelectorAll(".the-filter");
+function typeCheck(currentTask) {
+    tasks = document.querySelectorAll(".task");
+    const result = [...tasks].some((task) => {
+        const taskType = task
+            .querySelector(".task-type")
+            .textContent.toLowerCase();
+        if (task !== currentTask)
+            return (
+                taskType ===
+                currentTask
+                    .querySelector(".task-type")
+                    .textContent.toLowerCase()
+            );
+    });
+    return result;
+}
 
-completedFilter.forEach((ele) => {
-    ele.addEventListener("click", () => {
-        let taskss = document.querySelectorAll(".task");
-        taskss.forEach((task) => {
-            let value = ele.classList.item(2);
-            if (!task.classList.contains(value)) {
-                task.style.display = "none";
-            } else {
-                if (task.style.display === "none") task.style.display = "flex";
+function creatTask(
+    taskName,
+    taskDescription,
+    taskType,
+    isTaskCompleted = "false",
+    filtersChange = true,
+) {
+    // create add the task
+    const markUp = `<div class="head">
+                        <h2 class="task-name"></h2>
+                        <div class="right-side">
+                            <span class="task-type"></span>
+                            <div class="delete-task">X</div>
+                        </div>
+                    </div>
+                    <div class="foot">
+                        <p class="task-description"></p>
+                        <div class="check-circle">
+                            <i class='bx bx-check'></i>
+                        </div>
+                    </div>`;
+    const newTask = document.createElement("div");
+    newTask.classList.add("task", "show");
+    newTask.setAttribute("data-completed", isTaskCompleted);
+    newTask.innerHTML = markUp;
+    newTask.querySelector(".task-name").textContent = taskName;
+    newTask.querySelector(".task-type").textContent = taskType;
+    newTask.querySelector(".task-description").textContent = taskDescription;
+    document.querySelector(".tasks-area").prepend(newTask);
+
+    // create and add the type filter if it not found
+    if (!typeCheck(newTask)) {
+        const newFiltertype = document.createElement("span");
+        newFiltertype.textContent = taskType.toLowerCase();
+        newFiltertype.setAttribute("data-type", newFiltertype.textContent);
+        FiltersByTypeParent.append(newFiltertype);
+
+        if (filtersChange === true) {
+            tasksType = newFiltertype.dataset.type;
+            isTasksCompleted = "false";
+
+            FiltersByType = FiltersByTypeParent.querySelectorAll("span");
+            FiltersByType.forEach((filter) => {
+                filter.classList.remove("selected");
+            });
+            newFiltertype.classList.add("selected");
+
+            filtersByCompleted.forEach((filter) => {
+                let filterChild = filter.querySelector("span");
+                if (filterChild.textContent === "Not Completed") {
+                    filter.classList.add("selected");
+                } else {
+                    filter.classList.remove("selected");
+                }
+            });
+        }
+
+        newFiltertype.addEventListener("click", () => {
+            if (!newFiltertype.classList.contains("selected")) {
+                tasksType = newFiltertype.dataset.type;
+                FiltersByType = FiltersByTypeParent.querySelectorAll("span");
+
+                FiltersByType.forEach((filter) => {
+                    filter.classList.remove("selected");
+                });
+                newFiltertype.classList.add("selected");
+
+                upsdateTasks();
             }
         });
+    }
+
+    // add the complete task logic
+    newTask.querySelector(".check-circle").addEventListener("click", () => {
+        newTask.dataset.completed =
+            newTask.dataset.completed === "true" ? "false" : "true";
+        filteringTask(newTask);
+        saveData();
     });
-});
+
+    // add the delete logic
+    newTask.querySelector(".delete-task").addEventListener("click", () => {
+        newTask.remove();
+        if (!typeCheck(newTask)) {
+            const Content = (ele) => ele.textContent.toLowerCase();
+            FiltersByType.forEach((filter) => {
+                if (
+                    Content(filter) === taskType.toLowerCase() &&
+                    Content(filter) !== "all"
+                )
+                    filter.remove();
+                allType.classList.add("selected");
+                tasksType = "all";
+                upsdateTasks();
+            });
+        }
+        saveData();
+    });
+}
+
+function upsdateTasks() {
+    tasks = document.querySelectorAll(".task");
+    tasks.forEach((task) => {
+        filteringTask(task);
+    });
+}
+
+function saveData() {
+    let tasksData = [];
+    tasks.forEach((task) => {
+        tasksData.unshift({
+            taskName: task.querySelector(".task-name").textContent,
+            taskType: task.querySelector(".task-type").textContent,
+            taskDescription:
+                task.querySelector(".task-description").textContent,
+            isTaskCompleted: task.dataset.completed,
+        });
+    });
+    localStorage.setItem("tasks", JSON.stringify(tasksData));
+}
